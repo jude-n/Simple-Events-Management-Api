@@ -57,7 +57,7 @@ class UsersController extends Controller
     public function update(UpdateUserRequest $request, User $user)
     {
         $userDataToUpdate = $request->getSanitized();
-        $user->update();
+        $user->update($userDataToUpdate);
         return 'user updated';
     }
 
