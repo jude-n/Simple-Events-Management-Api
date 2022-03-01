@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreUserRequest extends FormRequest
 {
@@ -24,7 +25,24 @@ class StoreUserRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'first_name' => ['required', 'string'],
+            'last_name' => ['required', 'string'],
+            'email' => ['required', 'email', Rule::unique('users', 'email'), 'string'],
+            'contact' => ['required', Rule::unique('users', 'contact'), 'string'],
         ];
+    }
+
+    /**
+     * Modify input data
+     *
+     * @return array
+     */
+    public function getSanitized(): array
+    {
+        $sanitized = $this->validated();
+
+        //Add your code for manipulation with request data here
+
+        return $sanitized;
     }
 }
