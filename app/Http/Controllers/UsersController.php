@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\ApiResponseService;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
+use App\Http\Services\ApiResponseService;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
 {
@@ -21,6 +22,7 @@ class UsersController extends Controller
     {
         $this->apiResponseService = $apiResponseService;
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -35,14 +37,16 @@ class UsersController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return Response
+     * @return JsonResponse
      */
     public function store(StoreUserRequest $request)
     {
         $userData = $request->getSanitized();
+        $userData['status'] = 0;
+        $userData['password'] = Hash::make('password');
         $storedUser = User::create($userData);
         if($storedUser)
-            $this->apiResponseService->respondCreated($storedUser);
+            return $this->apiResponseService->respondWithResource(new UserResource($storedUser), 'User created', 201);
     }
 
     /**

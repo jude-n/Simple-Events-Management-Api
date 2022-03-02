@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http;
+namespace App\Http\Services;
 
 use App\Http\Resources\Empty\EmptyResource;
 use App\Http\Resources\Empty\EmptyResourceCollection;
@@ -20,6 +20,18 @@ class ApiResponseService
     public function respondSuccess($message = '')
     {
         return $this->apiResponse(['success' => true, 'message' => $message]);
+    }
+
+    /**
+     * Respond with error.
+     *
+     * @param string $message
+     *
+     * @return JsonResponse
+     */
+    public function respondError($message = '')
+    {
+        return $this->apiResponse(['success' => false, 'message' => $message]);
     }
 
     /**

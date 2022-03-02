@@ -17,10 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('user_name');
+            $table->string('user_name')->nullable();
             $table->string('avatar')->nullable();
-            $table->string('contact');
-            $table->boolean('status');
+            $table->string('contact')->nullable();
+            $table->boolean('status')->default(0);
             $table->string('facebook_id')->nullable();
             $table->string('google_id')->nullable();
             $table->string('apple_id')->nullable();
