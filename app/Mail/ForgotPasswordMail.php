@@ -16,9 +16,9 @@ class ForgotPasswordMail extends Mailable
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($forgot_password_date)
     {
-        //
+        $this->forgot_password_data = $forgot_password_date;
     }
 
     /**
@@ -28,6 +28,8 @@ class ForgotPasswordMail extends Mailable
      */
     public function build()
     {
-        return $this->view('view.name');
+        return $this->markdown('emails.admin.forgotPasswordTemplate')
+        ->subject('Forgot Password')
+        ->with('details',$this->forgot_password_data);
     }
 }
