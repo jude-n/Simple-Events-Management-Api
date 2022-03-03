@@ -149,16 +149,16 @@
                         </table>
                     </td>
                 </tr> <!-- COPY -->
-                <tr>
-                    <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 0px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                        <p style="margin: 0;">If that doesn't work, copy and paste the following link in your browser:</p>
-                    </td>
-                </tr> <!-- COPY -->
-                <tr>
-                    <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 20px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                        <p style="margin: 0;"><a href="{{$details['EMAIL_VERIFY_LINK']}}" target="_blank" style="color: #FFA73B;">https://bit.li.utlddssdstueincx</a></p>
-                    </td>
-                </tr>
+{{--                <tr>--}}
+{{--                    <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 0px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">--}}
+{{--                        <p style="margin: 0;">If that doesn't work, copy and paste the following link in your browser:</p>--}}
+{{--                    </td>--}}
+{{--                </tr> <!-- COPY -->--}}
+{{--                <tr>--}}
+{{--                    <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 20px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">--}}
+{{--                        <p style="margin: 0;"><a href="{{$details['EMAIL_VERIFY_LINK']}}" target="_blank" style="color: #FFA73B;">https://bit.li.utlddssdstueincx</a></p>--}}
+{{--                    </td>--}}
+{{--                </tr>--}}
                 <tr>
                     <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 20px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                         <p style="margin: 0;">If you have any questions, just reply to this email—we're always happy to help out.</p>
