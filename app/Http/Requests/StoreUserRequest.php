@@ -3,7 +3,10 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class StoreUserRequest extends FormRequest
 {
@@ -27,6 +30,16 @@ class StoreUserRequest extends FormRequest
         return [
             'first_name' => ['required', 'string'],
             'last_name' => ['required', 'string'],
+            'password' => [
+                'required',
+                'string',
+                Password::min(8)
+                ->mixedCase()
+                ->letters()
+                ->numbers()
+                ->symbols()
+                ->uncompromised(),
+                ],
             'email' => ['required', 'email', Rule::unique('users', 'email'), 'string'],
             'contact' => ['required', Rule::unique('users', 'contact'), 'string'],
         ];
@@ -42,7 +55,12 @@ class StoreUserRequest extends FormRequest
         $sanitized = $this->validated();
 
         //Add your code for manipulation with request data here
-
         return $sanitized;
+    }
+
+//    Prevent redirect to home page
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json(['errors' => $validator->errors()], 422));
     }
 }
