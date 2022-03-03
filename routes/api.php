@@ -27,6 +27,9 @@ Route::group([
 //    'middleware' => ['auth:api']
 ], function () {
     Route::apiResource('users', UsersController::class);
+    Route::post('/users/activate',[UsersController::class,'activateUser']);
+    Route::post('/users/forgot/password',[UsersController::class,'forgotPassword']);
+    Route::post('/users/reset/password',[UsersController::class,'resetPassword']);
     Route::apiResource('roles', RolesController::class);
     Route::apiResource('permissions', PermissionsController::class);
 });
