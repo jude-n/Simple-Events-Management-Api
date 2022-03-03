@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\RoleResource;
 use App\Http\Services\ApiResponseService;
 use App\Models\Role;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +25,7 @@ class RolesController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function index()
     {
@@ -34,8 +35,8 @@ class RolesController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request
+     * @return JsonResponse
      */
     public function store(Request $request)
     {
@@ -55,9 +56,9 @@ class RolesController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Role  $role
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request
+     * @param Role $role
+     * @return JsonResponse
      */
     public function update(Request $request, Role $role)
     {
@@ -65,19 +66,19 @@ class RolesController extends Controller
             'display_name' => 'nullable|string',
             'description' => 'nullable|string',
         ]);
-
-        $role->update($data);
+//        dd($request);
+        $updatedRole = $role->update($data);
         $role->syncPermissions($request->get('permissions') ?? []);
-
-        return $this->apiResponseService->respondSuccess('Role updated');
+        if($updatedRole)
+            return $this->apiResponseService->respondSuccess('Role updated');
 
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Role  $role
-     * @return \Illuminate\Http\JsonResponse
+     * @param Role $role
+     * @return JsonResponse
      */
     public function destroy(Role $role)
     {
