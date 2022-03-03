@@ -30,6 +30,7 @@ class UpdateUserRequest extends FormRequest
             'first_name' => ['required', 'string'],
             'last_name' => ['required', 'string'],
             'contact' => ['required', Rule::unique('users', 'contact'), 'string'],
+            'avatar' => ['nullable', 'string'],
         ];
     }
 

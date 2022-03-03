@@ -42,6 +42,7 @@ class StoreUserRequest extends FormRequest
                 ],
             'email' => ['required', 'email', Rule::unique('users', 'email'), 'string'],
             'contact' => ['required', Rule::unique('users', 'contact'), 'string'],
+            'avatar' => ['nullable', 'string'],
         ];
     }
 
