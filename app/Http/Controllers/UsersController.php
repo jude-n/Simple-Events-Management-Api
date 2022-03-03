@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
@@ -13,6 +14,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
@@ -44,12 +46,17 @@ class UsersController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        $user_data = $request->getSanitized();
-        $user_data['status'] = 0;
-        $user_data['password'] = Hash::make($user_data['password']);
-        $stored_user = User::create($user_data);
-        if($stored_user)
-            $this->sendVerificationEmail($stored_user);
+        $stored_user = DB::transaction(function () use ($request) {
+                $user_data = $request->getSanitized();
+                $user_data['status'] = 0;
+                $user_data['password'] = Hash::make($user_data['password']);
+                $stored_user = User::create($user_data);
+                if($stored_user)
+                    $email_sent = $this->sendVerificationEmail($stored_user);
+                if($email_sent)
+                    return $stored_user;
+                return $this->apiResponseService->respondError('Email could not be sent');
+            });
             return $this->apiResponseService->respondWithResource(new UserResource($stored_user), 'User created', 201);
     }
 
@@ -66,14 +73,14 @@ class UsersController extends Controller
             $user_id = decrypt($arr[0]);
             $time1 = decrypt($arr[1]);
             $user = User::where('id', $user_id)->first();
-            if ($user && decrypt($user->remember_token) == $time1) {
+            if ($user && decrypt($user->verify_token) == $time1) {
                 $time2 = Carbon::now()->timestamp;
                 if ($time1 < $time2) {
                     return $this->apiResponseService->respondError('Link has expired');
                 } else {
                     $user->is_email_verified = 1;
                     $user->email_verified_at = Carbon::now();
-                    $user->remember_token=null;
+                    $user->verify_token=null;
                     $user->save();
                     return $this->apiResponseService->respondSuccess("Your email address is verified now.");
                 }
@@ -85,17 +92,21 @@ class UsersController extends Controller
         }
     }
 
-    public function forgotPassword(User $user)
+    public function forgotPassword(ForgotPasswordRequest $request)
     {
+        $user = User::where('email', $request->email)->first();
+
         $expire_time = Carbon::now()->addDays(7)->timestamp;
-        $user->remember_token=encrypt($expire_time);
+        $user->verify_token=encrypt($expire_time);
         $user->save();
         $link = env('APP_URL').'/forgot-password?token='.encrypt($user->id).'-'.encrypt($expire_time);
         $email_data = [
             'TO_NAME'=>$user->first_name,
-            'EMAIL_VERIFY_LINK'=>$link,
+            'FORGOT_PASSWORD_LINK'=>$link,
         ];
-        Mail::to($this->$user)->send(new ForgotPasswordMail($email_data));
+        Mail::to($user->email)->send(new ForgotPasswordMail($email_data));
+
+        return $this->apiResponseService->respondSuccess('Email sent to reset password');
     }
 
     public function resetPassword(ResetPasswordRequest $request)
@@ -106,21 +117,21 @@ class UsersController extends Controller
             $user_id = decrypt($arr[0]);
             $time1 = decrypt($arr[1]);
             $user = User::where('id', $user_id)->first();
-            if ($user && decrypt($user->remember_token) == $time1) {
+            if ($user && decrypt($user->verify_token) == $time1) {
                 $time2 = Carbon::now()->timestamp;
                 if ($time1 < $time2) {
-                    return "Link is expired.";
+                    return $this->apiResponseService->respondError("Link is expired.");
                 } else {
                     $user->password = Hash::make($data['password']);
-                    $user->remember_token=null;
+                    $user->verify_token=null;
                     $user->save();
-                    return "Password has been reset";
+                    $this->apiResponseService->respondSuccess("Password has been reset");
                 }
             } else {
-                return "Invalid token";
+                return $this->apiResponseService->respondError("Invalid token");
             }
         } catch (\Exception $ex) {
-            return "Invalid token";
+            return $this->apiResponseService->respondError("Invalid token");
         }
     }
 
@@ -166,7 +177,7 @@ class UsersController extends Controller
     private function sendVerificationEmail(User $user)
     {
         $expire_time = Carbon::now()->addDays(7)->timestamp;
-        $user->remember_token=encrypt($expire_time);
+        $user->verify_token=encrypt($expire_time);
         $user->save();
         $link = env('APP_URL').'/account-verification?token='.encrypt($user->id).'-'.encrypt($expire_time);
         $email_data = [
@@ -177,7 +188,7 @@ class UsersController extends Controller
 //        Mail::to($user->email)->later(5, new UserVerificationMail('USER_EMAIL_VERIFICATION', $email_data));
         ## no delay instantly mail will be delivered
         try {
-            Mail::to($this->$user)->send(new UserVerificationMail($email_data));
+            Mail::to($user->email)->send(new UserVerificationMail($email_data));
 
             return true;
         } catch (\Exception $ex) {
