@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\PermissionResource;
 use App\Http\Services\ApiResponseService;
 use App\Models\Permission;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PermissionsController extends Controller
@@ -20,7 +21,7 @@ class PermissionsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function index()
     {
@@ -31,7 +32,7 @@ class PermissionsController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(Request $request)
     {
@@ -50,20 +51,20 @@ class PermissionsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Permission  $permission
-     * @return \Illuminate\Http\Response
+     * @param Permission $permission
+     * @return JsonResponse
      */
     public function show(Permission $permission)
     {
-        //
+        return $this->apiResponseService->respondWithResource(new PermissionResource($permission));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Permission  $permission
-     * @return \Illuminate\Http\JsonResponse
+     * @param Permission $permission
+     * @return JsonResponse
      */
     public function update(Request $request, Permission $permission)
     {
@@ -80,8 +81,8 @@ class PermissionsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Permission  $permission
-     * @return \Illuminate\Http\JsonResponse
+     * @param Permission $permission
+     * @return JsonResponse
      */
     public function destroy(Permission $permission)
     {
