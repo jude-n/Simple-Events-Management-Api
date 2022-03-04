@@ -1,7 +1,7 @@
 # For more information: https://laravel.com/docs/sail
 version: '3'
 services:
-    laravel.test:
+    app:
         build:
             context: ./vendor/laravel/sail/runtimes/8.1
             dockerfile: Dockerfile
@@ -55,6 +55,17 @@ services:
             test: ["CMD", "redis-cli", "ping"]
             retries: 3
             timeout: 5s
+    #PHP Adminer
+    phpmyadmin:
+        image: phpmyadmin
+        restart: always
+        ports:
+            - 9095:80
+        environment:
+            - PMA_HOST=mysql
+            - PMA_ARBITRARY=1
+        networks:
+            - sail
 networks:
     sail:
         driver: bridge
