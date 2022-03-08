@@ -51,6 +51,8 @@ class UsersController extends Controller
                 $user_data['status'] = 0;
                 $user_data['password'] = Hash::make($user_data['password']);
                 $stored_user = User::create($user_data);
+                if($request->get('role'))
+                    $stored_user->attachRole($request->get('role'));
                 if($stored_user)
                     $email_sent = $this->sendVerificationEmail($stored_user);
                 if($email_sent)
