@@ -55,10 +55,10 @@ services:
             test: ["CMD", "redis-cli", "ping"]
             retries: 3
             timeout: 5s
-    #PHP Adminer
+    #PHPmyadmin
     phpmyadmin:
         image: phpmyadmin
-        restart: always
+        restart: unless-stopped
         ports:
             - 9095:80
         environment:
